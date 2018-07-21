@@ -6,6 +6,9 @@ use std::io::Read;
 mod interpreter;
 use interpreter::Interpreter;
 
+mod parser;
+use parser::parse;
+
 const MEMORY_SIZE: usize = 65_536;
 
 fn main() {
@@ -18,6 +21,7 @@ fn main() {
   input.read_to_string(&mut program).unwrap();
   let program_chars = program.chars().collect::<Vec<_>>();
 
+  let parsed_program = parse(&program_chars);
   let mut interpreter = Interpreter::new(MEMORY_SIZE);
-  interpreter.run(&program_chars);
+  interpreter.run(&parsed_program);
 }

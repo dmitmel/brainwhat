@@ -1,14 +1,7 @@
 use std::io;
 use std::io::{Read, Write};
 
-const NEXT_CELL: char = '>';
-const PREV_CELL: char = '<';
-const INCREMENT: char = '+';
-const DECREMENT: char = '-';
-const PRINT_CHAR: char = '.';
-const READ_CHAR: char = ',';
-const BEGIN_LOOP: char = '[';
-const END_LOOP: char = ']';
+use parser::Instruction;
 
 pub struct Interpreter {
   memory: Vec<u8>,
@@ -23,59 +16,49 @@ impl Interpreter {
     }
   }
 
-  pub fn run(&mut self, program: &[char]) {
+  pub fn run(&mut self, program: &[Instruction]) {
     let mut char_index = 0;
 
     while char_index < program.len() {
       match program[char_index] {
-        NEXT_CELL => self.next_cell(),
-        PREV_CELL => self.prev_cell(),
+        Instruction::Right(n) => self.move_right(n),
+        Instruction::Left(n) => self.move_left(n),
 
-        INCREMENT => self.increment(),
-        DECREMENT => self.decrement(),
+        Instruction::Add(n) => self.add(n),
+        Instruction::Subtract(n) => self.subtract(n),
 
-        PRINT_CHAR => self.print_char().unwrap(),
-        READ_CHAR => self.read_char().unwrap(),
+        Instruction::Print => self.print_char().unwrap(),
+        Instruction::Read => self.read_char().unwrap(),
 
-        BEGIN_LOOP => if self.read_memory() == 0 {
-          char_index = find_end_of_loop(char_index, &program)
+        Instruction::BeginLoop => if self.read_memory() == 0 {
+          char_index = find_end_of_loop(char_index, program)
         },
 
-        END_LOOP => if self.read_memory() != 0 {
-          char_index = find_beggining_of_loop(char_index, &program)
+        Instruction::EndLoop => if self.read_memory() != 0 {
+          char_index = find_beggining_of_loop(char_index, program)
         },
-
-        _ => {}
       }
 
       char_index += 1;
     }
   }
 
-  fn next_cell(&mut self) {
-    if self.pointer >= self.memory.len() - 1 {
-      self.pointer = 0;
-    } else {
-      self.pointer += 1;
-    }
+  fn move_right(&mut self, n: usize) {
+    self.pointer += n;
   }
 
-  fn prev_cell(&mut self) {
-    if self.pointer == 0 {
-      self.pointer = self.memory.len() - 1;
-    } else {
-      self.pointer -= 1;
-    }
+  fn move_left(&mut self, n: usize) {
+    self.pointer -= n;
   }
 
-  fn increment(&mut self) {
-    let value = self.read_memory().wrapping_add(1);
-    self.store_memory(value);
+  fn add(&mut self, n: usize) {
+    let value = self.read_memory() as usize + n;
+    self.store_memory(value as u8);
   }
 
-  fn decrement(&mut self) {
-    let value = self.read_memory().wrapping_sub(1);
-    self.store_memory(value);
+  fn subtract(&mut self, n: usize) {
+    let value = self.read_memory() as usize - n;
+    self.store_memory(value as u8);
   }
 
   fn print_char(&self) -> io::Result<()> {
@@ -102,28 +85,28 @@ impl Interpreter {
   }
 }
 
-fn find_end_of_loop(beginning_index: usize, program: &[char]) -> usize {
+fn find_end_of_loop(beginning_index: usize, program: &[Instruction]) -> usize {
   let mut char_index = beginning_index;
   let mut brackets = 1;
   while brackets > 0 {
     char_index += 1;
     match program[char_index] {
-      BEGIN_LOOP => brackets += 1,
-      END_LOOP => brackets -= 1,
+      Instruction::BeginLoop => brackets += 1,
+      Instruction::EndLoop => brackets -= 1,
       _ => {}
     }
   }
   char_index
 }
 
-fn find_beggining_of_loop(end_index: usize, program: &[char]) -> usize {
+fn find_beggining_of_loop(end_index: usize, program: &[Instruction]) -> usize {
   let mut char_index = end_index;
   let mut brackets = 1;
   while brackets > 0 {
     char_index -= 1;
     match program[char_index] {
-      BEGIN_LOOP => brackets -= 1,
-      END_LOOP => brackets += 1,
+      Instruction::BeginLoop => brackets -= 1,
+      Instruction::EndLoop => brackets += 1,
       _ => {}
     }
   }
