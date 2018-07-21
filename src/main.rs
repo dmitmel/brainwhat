@@ -1,3 +1,23 @@
+use std::env;
+use std::fs::File;
+use std::io;
+use std::io::Read;
+
+mod interpreter;
+use interpreter::Interpreter;
+
+const MEMORY_SIZE: usize = 65_536;
+
 fn main() {
-  println!("Hello, world!");
+  let mut input: Box<dyn Read> = match env::args_os().nth(1) {
+    Some(path_arg) => Box::new(File::open(path_arg).unwrap()),
+    None => Box::new(io::stdin()),
+  };
+
+  let mut program = String::new();
+  input.read_to_string(&mut program).unwrap();
+  let program_chars = program.chars().collect::<Vec<_>>();
+
+  let mut interpreter = Interpreter::new(MEMORY_SIZE);
+  interpreter.run(&program_chars);
 }
