@@ -1,22 +1,10 @@
-extern crate failure;
-#[macro_use]
-extern crate failure_derive;
-
 use std::env;
 use std::fs::File;
 use std::io;
 use std::io::Read;
 
-mod error;
-use error::Result;
-
-mod instruction;
-
-mod interpreter;
-use interpreter::Interpreter;
-
-mod parser;
-use parser::parse;
+extern crate rust_brainfuck;
+use rust_brainfuck::{parse, Interpreter, Result as BfResult};
 
 const MEMORY_SIZE: usize = 65_536;
 
@@ -26,7 +14,7 @@ fn main() {
   }
 }
 
-fn run() -> Result<()> {
+fn run() -> BfResult<()> {
   let mut input: Box<dyn Read> = match env::args_os().nth(1) {
     Some(path) => Box::new(File::open(path)?),
     None => Box::new(io::stdin()),
