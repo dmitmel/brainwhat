@@ -63,9 +63,7 @@ impl Interpreter {
 
   fn print_char(&self) -> io::Result<()> {
     let chr = self.read_memory();
-    let mut stdout = io::stdout();
-    stdout.write_all(&[chr])?;
-    stdout.flush()?;
+    io::stdout().write_all(&[chr])?;
     Ok(())
   }
 
