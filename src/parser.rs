@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub enum Instruction {
   Right(usize),
   Left(usize),
@@ -5,13 +6,13 @@ pub enum Instruction {
   Subtract(usize),
   Print,
   Read,
-  BeginLoop,
-  EndLoop,
+  JumpIfZero(usize),
+  JumpIfNonZero(usize),
 }
 
-pub fn parse(program: &[char]) -> Vec<Instruction> {
-  use self::Instruction::*;
+use self::Instruction::*;
 
+pub fn parse(program: &[char]) -> Vec<Instruction> {
   let mut instructions = Vec::new();
 
   let mut char_index = 0;
@@ -23,8 +24,8 @@ pub fn parse(program: &[char]) -> Vec<Instruction> {
       '-' => Subtract(count_char(program, char_index, '-')),
       '.' => Print,
       ',' => Read,
-      '[' => BeginLoop,
-      ']' => EndLoop,
+      '[' => JumpIfZero(0),
+      ']' => JumpIfNonZero(0),
       _ => {
         char_index += 1;
         continue;
@@ -39,6 +40,24 @@ pub fn parse(program: &[char]) -> Vec<Instruction> {
     instructions.push(instruction);
   }
 
+  let mut instruction_index = 0;
+  while instruction_index < instructions.len() {
+    instructions[instruction_index] = match instructions[instruction_index] {
+      JumpIfZero(_) => {
+        JumpIfZero(find_end_of_loop(instruction_index, &instructions))
+      }
+      JumpIfNonZero(_) => {
+        JumpIfNonZero(find_beggining_of_loop(instruction_index, &instructions))
+      }
+      _ => {
+        instruction_index += 1;
+        continue;
+      }
+    };
+
+    instruction_index += 1;
+  }
+
   instructions
 }
 
@@ -48,4 +67,32 @@ fn count_char(program: &[char], start_index: usize, chr: char) -> usize {
     end_index += 1;
   }
   end_index - start_index
+}
+
+fn find_end_of_loop(beginning_index: usize, program: &[Instruction]) -> usize {
+  let mut char_index = beginning_index;
+  let mut brackets = 1;
+  while brackets > 0 {
+    char_index += 1;
+    match program[char_index] {
+      JumpIfZero(_) => brackets += 1,
+      JumpIfNonZero(_) => brackets -= 1,
+      _ => {}
+    }
+  }
+  char_index
+}
+
+fn find_beggining_of_loop(end_index: usize, program: &[Instruction]) -> usize {
+  let mut char_index = end_index;
+  let mut brackets = 1;
+  while brackets > 0 {
+    char_index -= 1;
+    match program[char_index] {
+      JumpIfZero(_) => brackets -= 1,
+      JumpIfNonZero(_) => brackets += 1,
+      _ => {}
+    }
+  }
+  char_index
 }

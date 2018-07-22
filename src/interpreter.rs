@@ -30,12 +30,12 @@ impl Interpreter {
         Instruction::Print => self.print_char().unwrap(),
         Instruction::Read => self.read_char().unwrap(),
 
-        Instruction::BeginLoop => if self.read_memory() == 0 {
-          char_index = find_end_of_loop(char_index, program)
+        Instruction::JumpIfZero(address) => if self.read_memory() == 0 {
+          char_index = address;
         },
 
-        Instruction::EndLoop => if self.read_memory() != 0 {
-          char_index = find_beggining_of_loop(char_index, program)
+        Instruction::JumpIfNonZero(address) => if self.read_memory() != 0 {
+          char_index = address;
         },
       }
 
@@ -83,32 +83,4 @@ impl Interpreter {
   fn store_memory(&mut self, value: u8) {
     self.memory[self.pointer] = value
   }
-}
-
-fn find_end_of_loop(beginning_index: usize, program: &[Instruction]) -> usize {
-  let mut char_index = beginning_index;
-  let mut brackets = 1;
-  while brackets > 0 {
-    char_index += 1;
-    match program[char_index] {
-      Instruction::BeginLoop => brackets += 1,
-      Instruction::EndLoop => brackets -= 1,
-      _ => {}
-    }
-  }
-  char_index
-}
-
-fn find_beggining_of_loop(end_index: usize, program: &[Instruction]) -> usize {
-  let mut char_index = end_index;
-  let mut brackets = 1;
-  while brackets > 0 {
-    char_index -= 1;
-    match program[char_index] {
-      Instruction::BeginLoop => brackets -= 1,
-      Instruction::EndLoop => brackets += 1,
-      _ => {}
-    }
-  }
-  char_index
 }
