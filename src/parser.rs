@@ -1,3 +1,5 @@
+use error::{Error, Result};
+
 #[derive(Debug)]
 pub enum Instruction {
   Right(usize),
@@ -12,16 +14,18 @@ pub enum Instruction {
 
 use self::Instruction::*;
 
-pub fn parse(program: &[char]) -> Vec<Instruction> {
-  let mut instructions = Vec::new();
+pub type Program = Vec<Instruction>;
+
+pub fn parse(code: &[char]) -> Result<Program> {
+  let mut program = Vec::new();
 
   let mut char_index = 0;
-  while char_index < program.len() {
-    let instruction = match program[char_index] {
-      '>' => Right(count_char(program, char_index, '>')),
-      '<' => Left(count_char(program, char_index, '<')),
-      '+' => Add(count_char(program, char_index, '+')),
-      '-' => Subtract(count_char(program, char_index, '-')),
+  while char_index < code.len() {
+    let instruction = match code[char_index] {
+      '>' => Right(count_char(code, char_index, '>')),
+      '<' => Left(count_char(code, char_index, '<')),
+      '+' => Add(count_char(code, char_index, '+')),
+      '-' => Subtract(count_char(code, char_index, '-')),
       '.' => Print,
       ',' => Read,
       '[' => JumpIfZero(0),
@@ -37,18 +41,22 @@ pub fn parse(program: &[char]) -> Vec<Instruction> {
       _ => 1,
     };
 
-    instructions.push(instruction);
+    program.push(instruction);
   }
 
   let mut instruction_index = 0;
-  while instruction_index < instructions.len() {
-    instructions[instruction_index] = match instructions[instruction_index] {
+  while instruction_index < program.len() {
+    program[instruction_index] = match program[instruction_index] {
       JumpIfZero(_) => {
-        JumpIfZero(find_end_of_loop(instruction_index, &instructions))
+        let address = find_end_of_loop(instruction_index, &program)?;
+        JumpIfZero(address)
       }
+
       JumpIfNonZero(_) => {
-        JumpIfNonZero(find_beggining_of_loop(instruction_index, &instructions))
+        let address = find_beggining_of_loop(instruction_index, &program)?;
+        JumpIfNonZero(address)
       }
+
       _ => {
         instruction_index += 1;
         continue;
@@ -58,7 +66,7 @@ pub fn parse(program: &[char]) -> Vec<Instruction> {
     instruction_index += 1;
   }
 
-  instructions
+  Ok(program)
 }
 
 fn count_char(program: &[char], start_index: usize, chr: char) -> usize {
@@ -69,30 +77,47 @@ fn count_char(program: &[char], start_index: usize, chr: char) -> usize {
   end_index - start_index
 }
 
-fn find_end_of_loop(beginning_index: usize, program: &[Instruction]) -> usize {
-  let mut char_index = beginning_index;
+fn find_end_of_loop(
+  beginning_index: usize,
+  program: &Program,
+) -> Result<usize> {
+  let mut index = beginning_index;
   let mut brackets = 1;
   while brackets > 0 {
-    char_index += 1;
-    match program[char_index] {
+    index += 1;
+
+    if index >= program.len() {
+      return Err(Error::Syntax("Unclosed bracket".to_owned()));
+    }
+
+    match program[index] {
       JumpIfZero(_) => brackets += 1,
       JumpIfNonZero(_) => brackets -= 1,
       _ => {}
     }
   }
-  char_index
+
+  Ok(index)
 }
 
-fn find_beggining_of_loop(end_index: usize, program: &[Instruction]) -> usize {
-  let mut char_index = end_index;
+fn find_beggining_of_loop(
+  end_index: usize,
+  program: &Program,
+) -> Result<usize> {
+  let mut index = end_index;
   let mut brackets = 1;
   while brackets > 0 {
-    char_index -= 1;
-    match program[char_index] {
+    if index == 0 {
+      return Err(Error::Syntax("Unexpected closing bracket".to_owned()));
+    }
+
+    index -= 1;
+    match program[index] {
       JumpIfZero(_) => brackets -= 1,
       JumpIfNonZero(_) => brackets += 1,
       _ => {}
     }
   }
-  char_index
+
+  Ok(index)
 }

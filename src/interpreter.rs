@@ -1,7 +1,8 @@
 use std::io;
 use std::io::{Read, Write};
 
-use parser::Instruction;
+use error::Result;
+use parser::{Instruction, Program};
 
 pub struct Interpreter {
   memory: Vec<u8>,
@@ -16,7 +17,7 @@ impl Interpreter {
     }
   }
 
-  pub fn run(&mut self, program: &[Instruction]) {
+  pub fn run(&mut self, program: &Program) -> Result<()> {
     let mut char_index = 0;
 
     while char_index < program.len() {
@@ -27,8 +28,8 @@ impl Interpreter {
         Instruction::Add(n) => self.add(n),
         Instruction::Subtract(n) => self.subtract(n),
 
-        Instruction::Print => self.print_char().unwrap(),
-        Instruction::Read => self.read_char().unwrap(),
+        Instruction::Print => self.print_char()?,
+        Instruction::Read => self.read_char()?,
 
         Instruction::JumpIfZero(address) => if self.read_memory() == 0 {
           char_index = address;
@@ -41,6 +42,8 @@ impl Interpreter {
 
       char_index += 1;
     }
+
+    Ok(())
   }
 
   fn move_right(&mut self, n: usize) {

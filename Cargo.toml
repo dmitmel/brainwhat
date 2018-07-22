@@ -10,3 +10,7 @@ homepage    = "https://github.com/dmitmel/rust-brainfuck"
 readme      = "README.md"
 categories  = ["command-line-utilities", "emulators"]
 keywords    = ["brainfuck", "language", "interpreter"]
+
+[dependencies]
+failure        = "0.1"
+failure_derive = "0.1"
