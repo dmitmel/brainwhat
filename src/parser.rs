@@ -1,22 +1,7 @@
 use error::{Error, Result};
+use instruction::{Instruction, Instruction::*};
 
-#[derive(Debug)]
-pub enum Instruction {
-  Right(usize),
-  Left(usize),
-  Add(usize),
-  Subtract(usize),
-  Print,
-  Read,
-  JumpIfZero(usize),
-  JumpIfNonZero(usize),
-}
-
-use self::Instruction::*;
-
-pub type Program = Vec<Instruction>;
-
-pub fn parse(code: &[char]) -> Result<Program> {
+pub fn parse(code: &[char]) -> Result<Vec<Instruction>> {
   let mut program = Vec::new();
 
   let mut char_index = 0;
@@ -79,7 +64,7 @@ fn count_char(program: &[char], start_index: usize, chr: char) -> usize {
 
 fn find_end_of_loop(
   beginning_index: usize,
-  program: &Program,
+  program: &[Instruction],
 ) -> Result<usize> {
   let mut index = beginning_index;
   let mut brackets = 1;
@@ -102,7 +87,7 @@ fn find_end_of_loop(
 
 fn find_beggining_of_loop(
   end_index: usize,
-  program: &Program,
+  program: &[Instruction],
 ) -> Result<usize> {
   let mut index = end_index;
   let mut brackets = 1;

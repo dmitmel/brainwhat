@@ -10,6 +10,8 @@ use std::io::Read;
 mod error;
 use error::Result;
 
+mod instruction;
+
 mod interpreter;
 use interpreter::Interpreter;
 

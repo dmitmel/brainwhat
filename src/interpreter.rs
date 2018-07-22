@@ -2,7 +2,7 @@ use std::io;
 use std::io::{Read, Write};
 
 use error::Result;
-use parser::{Instruction, Program};
+use instruction::{Instruction, Instruction::*};
 
 pub struct Interpreter {
   memory: Vec<u8>,
@@ -17,25 +17,24 @@ impl Interpreter {
     }
   }
 
-  pub fn run(&mut self, program: &Program) -> Result<()> {
+  pub fn run(&mut self, program: &[Instruction]) -> Result<()> {
     let mut char_index = 0;
 
     while char_index < program.len() {
       match program[char_index] {
-        Instruction::Right(n) => self.move_right(n),
-        Instruction::Left(n) => self.move_left(n),
+        Right(n) => self.move_right(n),
+        Left(n) => self.move_left(n),
 
-        Instruction::Add(n) => self.add(n),
-        Instruction::Subtract(n) => self.subtract(n),
+        Add(n) => self.add(n),
+        Subtract(n) => self.subtract(n),
 
-        Instruction::Print => self.print_char()?,
-        Instruction::Read => self.read_char()?,
+        Print => self.print_char()?,
+        Read => self.read_char()?,
 
-        Instruction::JumpIfZero(address) => if self.read_memory() == 0 {
+        JumpIfZero(address) => if self.read_memory() == 0 {
           char_index = address;
         },
-
-        Instruction::JumpIfNonZero(address) => if self.read_memory() != 0 {
+        JumpIfNonZero(address) => if self.read_memory() != 0 {
           char_index = address;
         },
       }
