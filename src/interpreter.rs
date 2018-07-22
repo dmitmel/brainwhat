@@ -52,13 +52,13 @@ impl Interpreter {
   }
 
   fn add(&mut self, n: usize) {
-    let value = self.read_memory() as usize + n;
-    self.store_memory(value as u8);
+    let value = self.read_memory().wrapping_add(n as u8);
+    self.store_memory(value);
   }
 
   fn subtract(&mut self, n: usize) {
-    let value = self.read_memory() as usize - n;
-    self.store_memory(value as u8);
+    let value = self.read_memory().wrapping_sub(n as u8);
+    self.store_memory(value);
   }
 
   fn print_char(&self) -> io::Result<()> {
