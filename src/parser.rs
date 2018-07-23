@@ -29,80 +29,41 @@ pub fn parse(code: &[char]) -> Result<Vec<Instruction>> {
     program.push(instruction);
   }
 
-  let mut instruction_index = 0;
-  while instruction_index < program.len() {
-    program[instruction_index] = match program[instruction_index] {
-      JumpIfZero(_) => {
-        let address = find_end_of_loop(instruction_index, &program)?;
-        JumpIfZero(address)
-      }
-
-      JumpIfNonZero(_) => {
-        let address = find_beggining_of_loop(instruction_index, &program)?;
-        JumpIfNonZero(address)
-      }
-
-      _ => {
-        instruction_index += 1;
-        continue;
-      }
-    };
-
-    instruction_index += 1;
-  }
+  link_jumps(&mut program)?;
 
   Ok(program)
 }
 
-fn count_char(program: &[char], start_index: usize, chr: char) -> usize {
+fn count_char(code: &[char], start_index: usize, chr: char) -> usize {
   let mut end_index = start_index + 1;
-  while end_index < program.len() && program[end_index] == chr {
+  while end_index < code.len() && code[end_index] == chr {
     end_index += 1;
   }
   end_index - start_index
 }
 
-fn find_end_of_loop(
-  beginning_index: usize,
-  program: &[Instruction],
-) -> Result<usize> {
-  let mut index = beginning_index;
-  let mut brackets = 1;
-  while brackets > 0 {
-    index += 1;
+fn link_jumps(program: &mut [Instruction]) -> Result<()> {
+  let mut jump_stack = Vec::with_capacity(15);
+  for isntruction_index in 0..program.len() {
+    match program[isntruction_index] {
+      JumpIfZero(_) => {
+        jump_stack.push(isntruction_index);
+      }
+      JumpIfNonZero(_) => {
+        let jump_index = jump_stack.pop().ok_or_else(|| {
+          Error::Syntax("Unexpected closing bracket".to_owned())
+        })?;
 
-    if index >= program.len() {
-      return Err(Error::Syntax("Unclosed bracket".to_owned()));
-    }
-
-    match program[index] {
-      JumpIfZero(_) => brackets += 1,
-      JumpIfNonZero(_) => brackets -= 1,
+        program[isntruction_index] = JumpIfNonZero(jump_index);
+        program[jump_index] = JumpIfZero(isntruction_index);
+      }
       _ => {}
     }
   }
 
-  Ok(index)
-}
-
-fn find_beggining_of_loop(
-  end_index: usize,
-  program: &[Instruction],
-) -> Result<usize> {
-  let mut index = end_index;
-  let mut brackets = 1;
-  while brackets > 0 {
-    if index == 0 {
-      return Err(Error::Syntax("Unexpected closing bracket".to_owned()));
-    }
-
-    index -= 1;
-    match program[index] {
-      JumpIfZero(_) => brackets -= 1,
-      JumpIfNonZero(_) => brackets += 1,
-      _ => {}
-    }
+  if jump_stack.is_empty() {
+    Ok(())
+  } else {
+    Err(Error::Syntax("Unclosed bracket".to_owned()))
   }
-
-  Ok(index)
 }
