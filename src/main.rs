@@ -3,8 +3,8 @@ use std::fs::File;
 use std::io;
 use std::io::Read;
 
-extern crate rust_brainfuck;
-use rust_brainfuck::{parse, Interpreter, Result as BfResult};
+extern crate brainwhat;
+use brainwhat::{parse, Interpreter, Result as BfResult};
 
 const MEMORY_SIZE: usize = 65_536;
 

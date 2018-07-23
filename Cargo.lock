@@ -20,6 +20,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "brainwhat"
+version = "0.1.0"
+dependencies = [
+ "failure 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "failure_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "cc"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -57,14 +65,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "quote"
 version = "0.3.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "rust-brainfuck"
-version = "0.1.0"
-dependencies = [
- "failure 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "failure_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "rustc-demangle"

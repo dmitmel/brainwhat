@@ -1,12 +1,12 @@
 [package]
 publish     = false
-name        = "rust-brainfuck"
+name        = "brainwhat"
 version     = "0.1.0"
 authors     = ["Dmytro Meleshko <dmytro.meleshko@gmail.com>"]
 description = "A fast and simple brainfuck interpreter in pure Rust"
 license     = "MIT"
-repository  = "https://github.com/dmitmel/rust-brainfuck.git"
-homepage    = "https://github.com/dmitmel/rust-brainfuck"
+repository  = "https://github.com/dmitmel/brainwhat.git"
+homepage    = "https://github.com/dmitmel/brainwhat"
 readme      = "README.md"
 categories  = ["command-line-utilities", "emulators"]
 keywords    = ["brainfuck", "language", "interpreter"]
