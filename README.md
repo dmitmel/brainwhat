@@ -67,12 +67,12 @@ extern crate brainwhat;
 
 // this program prints "hi!"
 let code = ">+++++[-<+++>>++++++>++<<]<[->+++++++<]>-.+.>+++.>.";
-let code_chars = code.chars().collect::<Vec<_>>();
+let code_chars = code.chars().collect::<Vec<char>>();
 // 4 memory cells is enough for this program
 let memory_size = 4;
 
 let parsed_program = brainwhat::parse(&code_chars)?;
-let optimized_program = optimize(&parsed_program)?;
+let optimized_program = brainwhat::optimize(&parsed_program)?;
 let mut interpreter = brainwhat::Interpreter::new(memory_size);
 interpreter.run(&optimized_program)?;
 ```
