@@ -48,3 +48,97 @@ pub(crate) fn link_jumps(program: &mut [Instruction]) -> Result<()> {
     Err(Error::Syntax("Unclosed bracket".to_owned()))
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  fn test_parse(code: &str) -> Result<Vec<Instruction>> {
+    let code_chars = code.chars().collect::<Vec<char>>();
+    parse(&code_chars)
+  }
+
+  macro_rules! test {
+    ($name:ident, $code:expr, $expected_program:expr) => {
+      #[test]
+      fn $name() {
+        let actual_program = test_parse($code).unwrap();
+        assert_eq!($expected_program, actual_program);
+      }
+    };
+  }
+
+  macro_rules! test_error {
+    ($name:ident, $code:expr, $expected_error:pat) => {
+      #[test]
+      fn $name() {
+        let actual_error = test_parse($code).unwrap_err();
+        assert!(match actual_error {
+          $expected_error => true,
+          _ => false,
+        })
+      }
+    };
+  }
+
+  test!(test_empty, "", vec![] as Vec<Instruction>);
+
+  test!(
+    test_empty_comments,
+    "hello world",
+    vec![] as Vec<Instruction>
+  );
+
+  test!(
+    test_basic,
+    "+>-<,.",
+    vec![Add(1), Right(1), Subtract(1), Left(1), Read, Print]
+  );
+
+  test!(
+    test_comments,
+    "this + is > a - very < long , comment .",
+    vec![Add(1), Right(1), Subtract(1), Left(1), Read, Print]
+  );
+
+  test!(
+    test_unicode_comments,
+    "це + довгий > коментар - это < длинный , комментарий . ¯\\_(ツ)_/¯",
+    vec![Add(1), Right(1), Subtract(1), Left(1), Read, Print]
+  );
+
+  test!(
+    test_simple_loops,
+    "+[,.]",
+    vec![Add(1), JumpIfZero(4), Read, Print, JumpIfNonZero(1)]
+  );
+
+  test!(
+    test_nested_loops,
+    ",[.[-],]",
+    vec![
+      Read,
+      JumpIfZero(7),
+      Print,
+      JumpIfZero(5),
+      Subtract(1),
+      JumpIfNonZero(3),
+      Read,
+      JumpIfNonZero(1),
+    ]
+  );
+
+  test_error!(test_unclosed_simple_loops, "+[,.", Error::Syntax(_));
+  test_error!(test_unclosed_nested_loops, ",[.[-,]", Error::Syntax(_));
+
+  test_error!(
+    test_unexpected_closing_simple_loops,
+    "+[,.]]",
+    Error::Syntax(_)
+  );
+  test_error!(
+    test_unexpected_closing_nested_loops,
+    ",.[-],]",
+    Error::Syntax(_)
+  );
+}
