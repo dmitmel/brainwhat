@@ -4,7 +4,7 @@ use std::io;
 use std::io::Read;
 
 extern crate brainwhat;
-use brainwhat::{parse, Interpreter, Result as BfResult};
+use brainwhat::{optimize, parse, Interpreter, Result as BfResult};
 
 const MEMORY_SIZE: usize = 65_536;
 
@@ -25,6 +25,7 @@ fn run() -> BfResult<()> {
   let code_chars = code.chars().collect::<Vec<_>>();
 
   let parsed_program = parse(&code_chars)?;
+  let optimized_program = optimize(&parsed_program)?;
   let mut interpreter = Interpreter::new(MEMORY_SIZE);
-  interpreter.run(&parsed_program)
+  interpreter.run(&optimized_program)
 }

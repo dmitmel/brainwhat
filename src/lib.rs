@@ -5,6 +5,9 @@ extern crate failure_derive;
 pub mod error;
 pub use error::*;
 
+pub mod optimizer;
+pub use optimizer::*;
+
 pub mod instruction;
 pub use instruction::*;
 

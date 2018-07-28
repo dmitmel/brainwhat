@@ -70,9 +70,10 @@ let code_chars = code.chars().collect::<Vec<_>>();
 // 4 memory cells is enough for this program
 let memory_size = 4;
 
-let program = brainwhat::parse(&code_chars)?;
+let parsed_program = brainwhat::parse(&code_chars)?;
+let optimized_program = optimize(&parsed_program)?;
 let mut interpreter = brainwhat::Interpreter::new(memory_size);
-interpreter.run(&program)?;
+interpreter.run(&optimized_program)?;
 ```
 
 ### Implementation details
