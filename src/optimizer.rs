@@ -19,7 +19,7 @@ pub fn optimize(program: &[Instruction]) -> Result<Vec<Instruction>> {
 
     optimized_program.push(match instruction {
       Right(_) | Left(_) | Add(_) | Subtract(_) => {
-        let n = count_instruction(program, index, instruction);
+        let n = count_instruction(&program[index..], instruction);
         skip_chars = n - 1;
 
         match instruction {
@@ -40,13 +40,12 @@ pub fn optimize(program: &[Instruction]) -> Result<Vec<Instruction>> {
 }
 
 fn count_instruction(
-  program: &[Instruction],
-  start_index: usize,
+  program_slice: &[Instruction],
   instruction: Instruction,
 ) -> usize {
-  let mut end_index = start_index + 1;
-  while end_index < program.len() && program[end_index] == instruction {
-    end_index += 1;
+  let mut count = 1;
+  while count < program_slice.len() && program_slice[count] == instruction {
+    count += 1;
   }
-  end_index - start_index
+  count
 }
