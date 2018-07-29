@@ -18,18 +18,36 @@ pub fn optimize(program: &[Instruction]) -> Result<Vec<Instruction>> {
     let instruction = program[index];
 
     optimized_program.push(match instruction {
-      Right(_) | Left(_) | Add(_) | Subtract(_) => {
-        let n = count_instruction(&program[index..], instruction);
-        skip_chars = n - 1;
-
-        match instruction {
-          Right(_) => Right(n),
-          Left(_) => Left(n),
-          Add(_) => Add(n),
-          Subtract(_) => Subtract(n),
-          _ => unreachable!(),
+      Add(_) => {
+        let mut total = 0isize;
+        for instruction in &program[index..] {
+          if let Add(n) = instruction {
+            total += n;
+            skip_chars += 1;
+          } else {
+            break;
+          }
         }
+        skip_chars -= 1;
+
+        Add(total)
       }
+
+      Move(_) => {
+        let mut total = 0isize;
+        for instruction in &program[index..] {
+          if let Move(n) = instruction {
+            total += n;
+            skip_chars += 1;
+          } else {
+            break;
+          }
+        }
+        skip_chars -= 1;
+
+        Move(total)
+      }
+
       _ => instruction,
     });
   }
@@ -37,15 +55,4 @@ pub fn optimize(program: &[Instruction]) -> Result<Vec<Instruction>> {
   link_jumps(&mut optimized_program)?;
 
   Ok(optimized_program)
-}
-
-fn count_instruction(
-  program_slice: &[Instruction],
-  instruction: Instruction,
-) -> usize {
-  let mut count = 1;
-  while count < program_slice.len() && program_slice[count] == instruction {
-    count += 1;
-  }
-  count
 }

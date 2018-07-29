@@ -22,11 +22,22 @@ impl Interpreter {
 
     while char_index < program.len() {
       match program[char_index] {
-        Right(n) => self.move_right(n),
-        Left(n) => self.move_left(n),
+        Move(n) => if n > 0 {
+          self.pointer += n as usize;
+        } else if n < 0 {
+          self.pointer -= n.abs() as usize;
+        },
 
-        Add(n) => self.add(n),
-        Subtract(n) => self.subtract(n),
+        Add(n) => {
+          let value = self.read_memory();
+          self.store_memory(if n > 0 {
+            value.wrapping_add(n as u8)
+          } else if n < 0 {
+            value.wrapping_sub(n.abs() as u8)
+          } else {
+            value
+          });
+        }
 
         Print => self.print_char()?,
         Read => self.read_char()?,
@@ -43,24 +54,6 @@ impl Interpreter {
     }
 
     Ok(())
-  }
-
-  fn move_right(&mut self, n: usize) {
-    self.pointer += n;
-  }
-
-  fn move_left(&mut self, n: usize) {
-    self.pointer -= n;
-  }
-
-  fn add(&mut self, n: usize) {
-    let value = self.read_memory().wrapping_add(n as u8);
-    self.store_memory(value);
-  }
-
-  fn subtract(&mut self, n: usize) {
-    let value = self.read_memory().wrapping_sub(n as u8);
-    self.store_memory(value);
   }
 
   fn print_char(&self) -> io::Result<()> {

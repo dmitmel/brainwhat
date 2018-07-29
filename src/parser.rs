@@ -8,10 +8,10 @@ pub fn parse(code: &[char]) -> Result<Vec<Instruction>> {
 
   for chr in code {
     program.push(match chr {
-      '>' => Right(1),
-      '<' => Left(1),
+      '>' => Move(1),
+      '<' => Move(-1),
       '+' => Add(1),
-      '-' => Subtract(1),
+      '-' => Add(-1),
       '.' => Print,
       ',' => Read,
       '[' => JumpIfZero(0),
@@ -94,19 +94,19 @@ mod tests {
   test!(
     test_basic,
     "+>-<,.",
-    vec![Add(1), Right(1), Subtract(1), Left(1), Read, Print]
+    vec![Add(1), Move(1), Add(-1), Move(-1), Read, Print]
   );
 
   test!(
     test_comments,
     "this + is > a - very < long , comment .",
-    vec![Add(1), Right(1), Subtract(1), Left(1), Read, Print]
+    vec![Add(1), Move(1), Add(-1), Move(-1), Read, Print]
   );
 
   test!(
     test_unicode_comments,
     "це + довгий > коментар - это < длинный , комментарий . ¯\\_(ツ)_/¯",
-    vec![Add(1), Right(1), Subtract(1), Left(1), Read, Print]
+    vec![Add(1), Move(1), Add(-1), Move(-1), Read, Print]
   );
 
   test!(
@@ -123,7 +123,7 @@ mod tests {
       JumpIfZero(7),
       Print,
       JumpIfZero(5),
-      Subtract(1),
+      Add(-1),
       JumpIfNonZero(3),
       Read,
       JumpIfNonZero(1),

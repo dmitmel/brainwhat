@@ -1,9 +1,7 @@
 #[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum Instruction {
-  Right(usize),
-  Left(usize),
-  Add(usize),
-  Subtract(usize),
+  Move(isize),
+  Add(isize),
   Print,
   Read,
   JumpIfZero(usize),

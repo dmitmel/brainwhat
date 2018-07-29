@@ -94,7 +94,7 @@ These are currently implemented optimizations, but I'm [planning](#todo) to add 
 Some instructions (`+`, `-`, `>`, `<`) are stackable, meaning that they can be merged into one instruction:
 
 ```
-+++++ >>> ------- <<<<<< -> [Add(5), Right(3), Subtract(7), Left(6)]
++++++ >>> ------- <<<<<< -> [Add(5), Move(3), Add(-7), Move(-6)]
 12345 123 1234567 123456 <-- instruction counts
 ```
 
