@@ -64,8 +64,9 @@ mod tests {
     ($name:ident, $code:expr, $expected_program:expr) => {
       #[test]
       fn $name() {
+        let expected_program: &[Instruction] = &$expected_program;
         let actual_program = test_parse($code).unwrap();
-        assert_eq!($expected_program, actual_program);
+        assert_eq!(expected_program, &actual_program[..]);
       }
     };
   }
@@ -83,42 +84,38 @@ mod tests {
     };
   }
 
-  test!(test_empty, "", Vec::<Instruction>::new());
+  test!(test_empty, "", []);
 
-  test!(
-    test_empty_comments,
-    "hello world",
-    Vec::<Instruction>::new()
-  );
+  test!(test_empty_comments, "hello world", []);
 
   test!(
     test_basic,
     "+>-<,.",
-    vec![Add(1), Move(1), Add(-1), Move(-1), Read, Print]
+    [Add(1), Move(1), Add(-1), Move(-1), Read, Print]
   );
 
   test!(
     test_comments,
     "this + is > a - very < long , comment .",
-    vec![Add(1), Move(1), Add(-1), Move(-1), Read, Print]
+    [Add(1), Move(1), Add(-1), Move(-1), Read, Print]
   );
 
   test!(
     test_unicode_comments,
     "це + довгий > коментар - это < длинный , комментарий . ¯\\_(ツ)_/¯",
-    vec![Add(1), Move(1), Add(-1), Move(-1), Read, Print]
+    [Add(1), Move(1), Add(-1), Move(-1), Read, Print]
   );
 
   test!(
     test_simple_loops,
     "+[,.]",
-    vec![Add(1), JumpIfZero(4), Read, Print, JumpIfNonZero(1)]
+    [Add(1), JumpIfZero(4), Read, Print, JumpIfNonZero(1)]
   );
 
   test!(
     test_nested_loops,
     ",[.[-],]",
-    vec![
+    [
       Read,
       JumpIfZero(7),
       Print,
