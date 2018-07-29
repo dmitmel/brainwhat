@@ -66,7 +66,7 @@ mod tests {
       fn $name() {
         let expected_program: &[Instruction] = &$expected_program;
         let actual_program = test_parse($code).unwrap();
-        assert_eq!(expected_program, &actual_program[..]);
+        assert_eq!(&actual_program[..], expected_program);
       }
     };
   }
@@ -152,7 +152,7 @@ mod tests {
       Move(-1), JumpIfNonZero(6), Move(-1), JumpIfZero(38), Add(-1), Move(1),
       Add(1), Add(1), Add(1), Add(1), Add(1), Add(1), Add(1), Move(-1),
       JumpIfNonZero(27), Move(1), Add(-1), Print, Add(1), Print, Move(1),
-      Add(1), Add(1), Add(1), Print, Move(1), Print
+      Add(1), Add(1), Add(1), Print, Move(1), Print,
     ]
   );
 }

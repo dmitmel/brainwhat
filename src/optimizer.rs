@@ -68,7 +68,7 @@ mod tests {
       fn $name() {
         let expected_program: &[Instruction] = &$expected_program;
         let actual_program = optimize(&$program).unwrap();
-        assert_eq!(expected_program, &actual_program[..]);
+        assert_eq!(&actual_program[..], expected_program);
       }
     };
   }
@@ -104,7 +104,7 @@ mod tests {
       Add(-1),
       Add(-1),
       Move(-1),
-      Move(-1)
+      Move(-1),
     ],
     [Add(4), Move(3), Add(-5), Move(-2)]
   );
@@ -125,7 +125,7 @@ mod tests {
       Move(1),
       Move(1),
       Move(-1),
-      Move(-1)
+      Move(-1),
     ],
     [Add(-1), Move(1)]
   );
@@ -138,6 +138,7 @@ mod tests {
       Add(1),
       Add(1),
       JumpIfZero(12),
+      Add(-1),
       Move(1),
       Move(1),
       Add(1),
@@ -145,15 +146,16 @@ mod tests {
       Add(1),
       Move(-1),
       Move(-1),
-      JumpIfNonZero(4)
+      JumpIfNonZero(4),
     ],
     [
       Add(4),
-      JumpIfZero(5),
+      JumpIfZero(6),
+      Add(-1),
       Move(2),
       Add(3),
       Move(-2),
-      JumpIfNonZero(1)
+      JumpIfNonZero(1),
     ]
   );
 
@@ -173,14 +175,14 @@ mod tests {
       Move(-1), JumpIfNonZero(6), Move(-1), JumpIfZero(38), Add(-1), Move(1),
       Add(1), Add(1), Add(1), Add(1), Add(1), Add(1), Add(1), Move(-1),
       JumpIfNonZero(27), Move(1), Add(-1), Print, Add(1), Print, Move(1),
-      Add(1), Add(1), Add(1), Print, Move(1), Print
+      Add(1), Add(1), Add(1), Print, Move(1), Print,
     ],
     [
       Move(1), Add(5), JumpIfZero(11), Add(-1), Move(-1), Add(3), Move(2),
       Add(6), Move(1), Add(2), Move(-2), JumpIfNonZero(2), Move(-1),
       JumpIfZero(18), Add(-1), Move(1), Add(7), Move(-1), JumpIfNonZero(13),
       Move(1), Add(-1), Print, Add(1), Print, Move(1), Add(3), Print, Move(1),
-      Print
+      Print,
     ]
   );
 }
