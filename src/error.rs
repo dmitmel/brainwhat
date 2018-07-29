@@ -8,6 +8,11 @@ pub enum Error {
 
   #[fail(display = "{}", _0)]
   Io(#[cause] IoError),
+
+  #[fail(display = "pointer overflow")]
+  PointerOverflow,
+  #[fail(display = "pointer underflow")]
+  PointerUnderflow,
 }
 
 impl From<IoError> for Error {

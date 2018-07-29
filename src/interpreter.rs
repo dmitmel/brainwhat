@@ -1,7 +1,7 @@
 use std::io;
 use std::io::{Read, Write};
 
-use error::Result;
+use error::{Error, Result};
 use instruction::{Instruction, Instruction::*};
 
 #[derive(Debug)]
@@ -33,9 +33,19 @@ impl Interpreter {
     while char_index < program.len() {
       match program[char_index] {
         Move(n) => if n > 0 {
-          self.pointer += n as usize;
+          let n = n as usize;
+          if n <= self.memory.len() && self.pointer < self.memory.len() - n {
+            self.pointer += n;
+          } else {
+            return Err(Error::PointerOverflow);
+          }
         } else if n < 0 {
-          self.pointer -= n.abs() as usize;
+          let n = n.abs() as usize;
+          if self.pointer >= n {
+            self.pointer -= n;
+          } else {
+            return Err(Error::PointerUnderflow);
+          }
         },
 
         Add(n) => {
@@ -91,7 +101,6 @@ impl Interpreter {
 #[cfg(test)]
 mod tests {
   use super::*;
-  use error::Error;
 
   const MEMORY_SIZE: usize = 100;
 
@@ -117,23 +126,46 @@ mod tests {
     };
   }
 
-  macro_rules! test_panic {
-    ($name:ident, $program:expr, $input:expr) => {
+  struct FakeIo;
+
+  impl Read for FakeIo {
+    fn read(&mut self, _buf: &mut [u8]) -> io::Result<usize> {
+      Err(io::Error::new(io::ErrorKind::Other, "this is fake I/O"))
+    }
+  }
+
+  impl Write for FakeIo {
+    fn write(&mut self, _buf: &[u8]) -> io::Result<usize> {
+      Err(io::Error::new(io::ErrorKind::Other, "this is fake I/O"))
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+      Err(io::Error::new(io::ErrorKind::Other, "this is fake I/O"))
+    }
+  }
+
+  macro_rules! test_error {
+    ($name:ident, $program:expr, $input:expr, $expected_error:pat) => {
       #[test]
-      #[should_panic]
       fn $name() {
         let mut input: &[u8] = &$input;
-        let mut output: Vec<u8> = Vec::new();
-        test_run(&$program, &mut input, &mut output).unwrap();
+        let mut output = FakeIo;
+        let actual_error =
+          test_run(&$program, &mut input, &mut output).unwrap_err();
+        assert!(match actual_error {
+          $expected_error => true,
+          _ => false,
+        })
       }
     };
   }
 
   macro_rules! test_io_error {
-    ($name:ident, $program:expr, $io:expr, $expected_error:pat) => {
+    ($name:ident, $program:expr, $expected_error:pat) => {
       #[test]
       fn $name() {
-        let actual_error = test_run(&$program, &mut $io, &mut $io).unwrap_err();
+        let actual_error =
+          test_run(&$program, &mut FakeIo, &mut FakeIo).unwrap_err();
         assert!(match actual_error {
           $expected_error => true,
           _ => false,
@@ -203,8 +235,46 @@ mod tests {
     [0, 0, 0, 1, 2, 3]
   );
 
-  test_panic!(test_move_left_overflow, [Move(-1)], []);
-  test_panic!(test_move_right_overflow, [Move(MEMORY_SIZE as isize)], []);
+  test_error!(
+    test_move_underflow_from_left,
+    [Move(-1)],
+    [],
+    Error::PointerUnderflow
+  );
+  test_error!(
+    test_move_underflow,
+    [Move(1), Move(-2)],
+    [],
+    Error::PointerUnderflow
+  );
+  test_error!(
+    test_move_underflow_from_right,
+    [
+      Move(MEMORY_SIZE as isize - 1),
+      Move(-(MEMORY_SIZE as isize) - 1)
+    ],
+    [],
+    Error::PointerUnderflow
+  );
+
+  test_error!(
+    test_move_overflow_from_left,
+    [Move(MEMORY_SIZE as isize + 1)],
+    [],
+    Error::PointerOverflow
+  );
+  test_error!(
+    test_move_overflow,
+    [Move(MEMORY_SIZE as isize - 2), Move(2)],
+    [],
+    Error::PointerOverflow
+  );
+  test_error!(
+    test_move_overflow_from_right,
+    [Move(MEMORY_SIZE as isize - 1), Move(1)],
+    [],
+    Error::PointerOverflow
+  );
 
   test!(
     test_read,
@@ -268,24 +338,6 @@ mod tests {
     [104, 105, 33, 10] // "hi!\n"
   );
 
-  struct FakeIo;
-
-  impl Read for FakeIo {
-    fn read(&mut self, _buf: &mut [u8]) -> io::Result<usize> {
-      Err(io::Error::new(io::ErrorKind::Other, "test error"))
-    }
-  }
-
-  impl Write for FakeIo {
-    fn write(&mut self, _buf: &[u8]) -> io::Result<usize> {
-      Err(io::Error::new(io::ErrorKind::Other, "test error"))
-    }
-
-    fn flush(&mut self) -> io::Result<()> {
-      Err(io::Error::new(io::ErrorKind::Other, "test error"))
-    }
-  }
-
-  test_io_error!(test_read_io_error, [Read], FakeIo, Error::Io(_));
-  test_io_error!(test_write_io_error, [Print], FakeIo, Error::Io(_));
+  test_io_error!(test_read_io_error, [Read], Error::Io(_));
+  test_io_error!(test_write_io_error, [Print], Error::Io(_));
 }
