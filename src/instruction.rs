@@ -35,3 +35,52 @@ impl fmt::Display for Instruction {
     )
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use optimizer::optimize;
+  use parser::parse;
+
+  #[test]
+  fn test_display() {
+    // this program is perfect for this test because it contains every
+    // instruction, nested loops and comments
+    let source_code = "
+>>>+[[-]>>[-]++>+>+++++++[<++++>>++<-]++>>+>+>+++++[>++>++++++<<-]+>>>,<++[[>[
+->>]<[>>]<<-]<[<]<+>>[>]>[<+>-[[<+>-]>]<[[[-]<]++<-[<+++++++++>[<->-]>>]>>]]<<
+]<]<[[<]>[[>]>>[>>]+[<<]<[<]<+>>-]>[>]+[->>]<<<<[[<<]<[<]+<<[+>+<<-[>-->+<<-[>
++<[>>+<<-]]]>[<+>-]<]++>>-->[>]>>[>>]]<<[>>+<[[<]<]>[[<<]<[<]+[-<+>>-[<<+>++>-
+[<->[<<+>>-]]]<[>+<-]>]>[>]>]>[>>]>>]<<[>>+>>+>>]<<[->>>>>>>>]<<[>.>>>>>>>]<<[
+>->>>>>]<<[>,>>>]<<[>+>]<<[+<<]<]
+[input a brainfuck program and its input, separated by an exclamation point.
+Daniel B Cristofani (cristofdathevanetdotcom)
+http://www.hevanet.com/cristofd/brainfuck/]
+";
+    let source_code_chars = source_code.chars().collect::<Vec<_>>();
+
+    let expected_code_chars = source_code_chars
+      .clone()
+      .into_iter()
+      .filter(|chr| match chr {
+        '>' | '<' | '+' | '-' | '.' | ',' | '[' | ']' => true,
+        _ => false,
+      })
+      .collect::<Vec<char>>();
+
+    fn program_to_chars(program: &[Instruction]) -> Vec<char> {
+      program
+        .into_iter()
+        .fold(Vec::new(), |mut result, instruction| {
+          result.extend(instruction.to_string().chars());
+          result
+        })
+    }
+
+    let parsed_program = parse(&source_code_chars).unwrap();
+    assert_eq!(program_to_chars(&parsed_program), expected_code_chars);
+
+    let optimized_program = optimize(&parsed_program).unwrap();
+    assert_eq!(program_to_chars(&optimized_program), expected_code_chars);
+  }
+}
