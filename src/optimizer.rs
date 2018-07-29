@@ -56,3 +56,110 @@ pub fn optimize(program: &[Instruction]) -> Result<Vec<Instruction>> {
 
   Ok(optimized_program)
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use error::Error;
+
+  macro_rules! test {
+    ($name:ident, $program:expr, $expected_program:expr) => {
+      #[test]
+      fn $name() {
+        let expected_program: &[Instruction] = &$expected_program;
+        let actual_program = optimize(&$program).unwrap();
+        assert_eq!(expected_program, &actual_program[..]);
+      }
+    };
+  }
+
+  macro_rules! test_error {
+    ($name:ident, $program:expr, $expected_error:pat) => {
+      #[test]
+      fn $name() {
+        let actual_error = optimize(&$program).unwrap_err();
+        assert!(match actual_error {
+          $expected_error => true,
+          _ => false,
+        })
+      }
+    };
+  }
+
+  test!(test_empty, [], []);
+
+  test!(
+    test_instruction_stacking,
+    [
+      Add(1),
+      Add(1),
+      Add(1),
+      Add(1),
+      Move(1),
+      Move(1),
+      Move(1),
+      Add(-1),
+      Add(-1),
+      Add(-1),
+      Add(-1),
+      Add(-1),
+      Move(-1),
+      Move(-1)
+    ],
+    [Add(4), Move(3), Add(-5), Move(-2)]
+  );
+
+  test!(
+    test_similar_instruction_stacking,
+    [
+      Add(1),
+      Add(1),
+      Add(1),
+      Add(1),
+      Add(-1),
+      Add(-1),
+      Add(-1),
+      Add(-1),
+      Add(-1),
+      Move(1),
+      Move(1),
+      Move(1),
+      Move(-1),
+      Move(-1)
+    ],
+    [Add(-1), Move(1)]
+  );
+
+  test!(
+    test_link_loops,
+    [
+      Add(1),
+      Add(1),
+      Add(1),
+      Add(1),
+      JumpIfZero(12),
+      Move(1),
+      Move(1),
+      Add(1),
+      Add(1),
+      Add(1),
+      Move(-1),
+      Move(-1),
+      JumpIfNonZero(4)
+    ],
+    [
+      Add(4),
+      JumpIfZero(5),
+      Move(2),
+      Add(3),
+      Move(-2),
+      JumpIfNonZero(1)
+    ]
+  );
+
+  test_error!(
+    test_loop_syntax_errors,
+    [Add(1), JumpIfZero(4), Read, Print],
+    Error::Syntax(_)
+  );
+}
