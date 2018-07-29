@@ -1,6 +1,8 @@
 use error::{Error, Result};
 use instruction::{Instruction, Instruction::*};
 
+const TYPICAL_LOOP_NESTING: usize = 10;
+
 pub fn parse(code: &[char]) -> Result<Vec<Instruction>> {
   let mut program = Vec::with_capacity(code.len());
 
@@ -24,7 +26,7 @@ pub fn parse(code: &[char]) -> Result<Vec<Instruction>> {
 }
 
 pub(crate) fn link_jumps(program: &mut [Instruction]) -> Result<()> {
-  let mut jump_stack = Vec::with_capacity(15);
+  let mut jump_stack = Vec::with_capacity(TYPICAL_LOOP_NESTING);
   for isntruction_index in 0..program.len() {
     match program[isntruction_index] {
       JumpIfZero(_) => {
@@ -81,12 +83,12 @@ mod tests {
     };
   }
 
-  test!(test_empty, "", vec![] as Vec<Instruction>);
+  test!(test_empty, "", Vec::<Instruction>::new());
 
   test!(
     test_empty_comments,
     "hello world",
-    vec![] as Vec<Instruction>
+    Vec::<Instruction>::new()
   );
 
   test!(
