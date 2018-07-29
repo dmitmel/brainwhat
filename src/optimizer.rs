@@ -162,4 +162,25 @@ mod tests {
     [Add(1), JumpIfZero(4), Read, Print],
     Error::Syntax(_)
   );
+
+  #[cfg_attr(rustfmt, rustfmt_skip)]
+  test!(
+    test_real_program,
+    [
+      Move(1), Add(1), Add(1), Add(1), Add(1), Add(1), JumpIfZero(25), Add(-1),
+      Move(-1), Add(1), Add(1), Add(1), Move(1), Move(1), Add(1), Add(1),
+      Add(1), Add(1), Add(1), Add(1), Move(1), Add(1), Add(1), Move(-1),
+      Move(-1), JumpIfNonZero(6), Move(-1), JumpIfZero(38), Add(-1), Move(1),
+      Add(1), Add(1), Add(1), Add(1), Add(1), Add(1), Add(1), Move(-1),
+      JumpIfNonZero(27), Move(1), Add(-1), Print, Add(1), Print, Move(1),
+      Add(1), Add(1), Add(1), Print, Move(1), Print
+    ],
+    [
+      Move(1), Add(5), JumpIfZero(11), Add(-1), Move(-1), Add(3), Move(2),
+      Add(6), Move(1), Add(2), Move(-2), JumpIfNonZero(2), Move(-1),
+      JumpIfZero(18), Add(-1), Move(1), Add(7), Move(-1), JumpIfNonZero(13),
+      Move(1), Add(-1), Print, Add(1), Print, Move(1), Add(3), Print, Move(1),
+      Print
+    ]
+  );
 }

@@ -140,4 +140,19 @@ mod tests {
     ",.[-],]",
     Error::Syntax(_)
   );
+
+  #[cfg_attr(rustfmt, rustfmt_skip)]
+  test!(
+    test_real_program,
+    ">+++++[-<+++>>++++++>++<<]<[->+++++++<]>-.+.>+++.>.",
+    [
+      Move(1), Add(1), Add(1), Add(1), Add(1), Add(1), JumpIfZero(25), Add(-1),
+      Move(-1), Add(1), Add(1), Add(1), Move(1), Move(1), Add(1), Add(1),
+      Add(1), Add(1), Add(1), Add(1), Move(1), Add(1), Add(1), Move(-1),
+      Move(-1), JumpIfNonZero(6), Move(-1), JumpIfZero(38), Add(-1), Move(1),
+      Add(1), Add(1), Add(1), Add(1), Add(1), Add(1), Add(1), Move(-1),
+      JumpIfNonZero(27), Move(1), Add(-1), Print, Add(1), Print, Move(1),
+      Add(1), Add(1), Add(1), Print, Move(1), Print
+    ]
+  );
 }
