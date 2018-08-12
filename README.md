@@ -85,6 +85,18 @@ interpreter.run(&optimized_program)?;
 - Addition and subtraction can over- and underflow.
 - If EOF is reached when executing read (`,`) instruction, current cell will be set to zero.
 
+## Sample Brainfuck programs
+
+This repository includes some sample Brainfuck programs. You can run them using this command: `cargo run --release programs/name.b`.
+
+- [`dbfi.b`](programs/dbfi.b) – the shortest Brainfuck [self-interpreter](<https://en.wikipedia.org/wiki/Interpreter_(computing)#Self-interpreter>) by Daniel B. Cristofani
+- [`factor.b`](programs/factor.b) – prints the prime factors of the specified integer by Brian Raiter
+- [`hanoi.b`](programs/hanoi.b) – implementation of the ["Towers of Hanoi"](https://en.wikipedia.org/wiki/Tower_of_Hanoi) problem
+- [`hello.b`](programs/hello.b) – "Hello World!" in Brainfuck
+- [`life.bf`](programs/life.bf) – implementation of [Conway's Game Of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) by Linus Akesson
+- [`long.b`](programs/long.b) – a dummy program that takes a long time to run
+- [`mandelbrot.b`](programs/mandelbrot.b) – a Mandelbrot set fractal viewer written by Erik Bosman
+
 ## Optimizations
 
 These are currently implemented optimizations, but I'm [planning](#todo) to add more.
