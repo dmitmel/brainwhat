@@ -10,7 +10,7 @@ const MEMORY_SIZE: usize = 65_536;
 
 fn main() {
   if let Err(error) = run() {
-    println!("{}", error);
+    eprintln!("{}", error);
   }
 }
 
