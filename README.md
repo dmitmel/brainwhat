@@ -97,6 +97,33 @@ This repository includes some sample Brainfuck programs. You can run them using 
 - [`long.b`](programs/long.b) – a dummy program that takes a long time to run
 - [`mandelbrot.b`](programs/mandelbrot.b) – a Mandelbrot set fractal viewer written by Erik Bosman
 
+## Benchmarks
+
+**Brainfuck program:** DBFI (Brainfuck self-interpreter) which runs DBFI which runs simple program which prints `hello123`
+
+**Baseline implementations:** [`bff`](https://github.com/apankrat/bff) and [`bff4`](http://mazonka.com/brainf/) (with linear optimizations turned off)
+
+**Hardware:** _13-inch Early 2015 MacBook Pro_ with _Intel Core i7 @ 3.1 GHz_.
+
+```
+Benchmark #1: bin/bff bench_prog < bench_input
+  Time (mean ± σ):     298.3 ms ±   4.0 ms    [User: 293.3 ms, System: 2.6 ms]
+  Range (min … max):   292.0 ms … 303.8 ms
+
+Benchmark #2: bin/bff4 < bench_bff4_input
+  Time (mean ± σ):     247.9 ms ±   4.5 ms    [User: 242.7 ms, System: 2.8 ms]
+  Range (min … max):   244.3 ms … 259.3 ms
+
+Benchmark #3: bin/brainwhat bench_prog < bench_input
+  Time (mean ± σ):     372.4 ms ±   7.1 ms    [User: 367.1 ms, System: 2.9 ms]
+  Range (min … max):   364.3 ms … 383.2 ms
+
+Summary
+  'bin/bff4 < bench_bff4_input' ran
+    1.20x faster than 'bin/bff bench_prog < bench_input'
+    1.50x faster than 'bin/brainwhat bench_prog < bench_input'
+```
+
 ## Optimizations
 
 These are currently implemented optimizations, but I'm [planning](#todo) to add more.
@@ -126,7 +153,6 @@ All loops are linked when parsing program, so interpreter doesn't have to search
 
 - CLI with different options (e.g. memory/cell size, behavior on overflows etc)
 - Different memory tapes (e.g. dynamic, finite etc)
-- Benchmarks
 - More optimizations
 - Better handling of errors (i.e. print where the error has occurred)
 - [Visualizer](https://fatiherikli.github.io/brainfuck-visualizer/) or [debugger](https://www.iamcal.com/misc/bf_debug/)

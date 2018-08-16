@@ -62,13 +62,9 @@ case "$bench_level" in
   *) error "unknown benchmark level: $bench_level"; exit 1 ;;
 esac
 
-# 'si' stands for 'self interpreter'
-bf_si="../programs/dbfi.b"
-
-cp $bf_si bench_prog
-echo "$(<$bf_si)!${bf_si_input}!hello123" > bench_input
-
-echo "$(<$bf_si)!$(<$bf_si)!${bf_si_input}!hello123" > bench_bff4_input
+cp ../programs/dbfi.b bench_prog
+echo "$(<bench_prog)!${bf_si_input}!hello123" > bench_input
+echo "$(<bench_prog)!$(<bench_prog)!${bf_si_input}!hello123" > bench_bff4_input
 
 benchmarks=(
   "bin/bff bench_prog < bench_input"
