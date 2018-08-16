@@ -139,6 +139,7 @@ All loops are linked when parsing program, so interpreter doesn't have to search
 
 ## TODO
 
+- Documentation
 - CLI with different options (e.g. memory/cell size, behavior on overflows etc)
 - Different memory tapes (e.g. dynamic, finite etc)
 - More optimizations
