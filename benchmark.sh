@@ -62,15 +62,19 @@ case "$bench_level" in
   *) error "unknown benchmark level: $bench_level"; exit 1 ;;
 esac
 
-cp ../programs/dbfi.b bench_prog
-echo "$(<bench_prog)!${bf_si_input}!hello123" > bench_input
-echo "$(<bench_prog)!$(<bench_prog)!${bf_si_input}!hello123" > bench_bff4_input
+if [[ ! -f dbfi.b ]]; then
+  info "downloading 'dbfi'"
+  curl http://www.hevanet.com/cristofd/brainfuck/dbfi.b --remote-name
+fi
+
+echo "$(<dbfi.b)!${bf_si_input}!hello123" > bench_input
+echo "$(<dbfi.b)!$(<dbfi.b)!${bf_si_input}!hello123" > bench_bff4_input
 
 benchmarks=(
-  "bin/bff bench_prog < bench_input"
+  "bin/bff dbfi.b < bench_input"
   "bin/bff4 < bench_bff4_input"
-  # "bff4/bff4lnr bench_prog < bench_input"
-  "bin/brainwhat bench_prog < bench_input"
+  # "bff4/bff4lnr dbfi.b < bench_input"
+  "bin/brainwhat dbfi.b < bench_input"
 )
 
 info "runing benchmarks"
