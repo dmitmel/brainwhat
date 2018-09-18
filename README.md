@@ -127,7 +127,7 @@ Some instructions (`+`, `-`, `>`, `<`) are stackable, meaning that they can be m
 
 ### 2. Loops
 
-All loops are linked when parsing program, so interpreter doesn't have to search matching brackets at runtime (this is optimization makes interpreter really fast!!!):
+All loops are linked when parsing program, so interpreter doesn't have to search matching brackets at runtime (this optimization makes interpreter really fast!!!):
 
 ```
    __                            ____________________________
