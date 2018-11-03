@@ -9,17 +9,17 @@
 
 > `brainwhat` is a fast optimizing [Brainfuck](#what-is-brainfuck) interpreter written in pure [Rust](https://www.rust-lang.org/)
 
-**fast** – Rust is a system-level programming language, so it compiles to very fast native binaries.
+**fast** – Rust is a systems programming language, so it compiles to very fast native binaries.
 
 **optimizing** – Brainfuck code is first parsed to a [list of instructions](https://en.wikipedia.org/wiki/Intermediate_representation), then [optimized](#optimizations) and after that these instructions are passed to the **interpreter**.
 
-**interpreter** – it doesn't compile Brainfuck to another language, instead, it the executes program directly.
+**interpreter** – it doesn't compile Brainfuck to another language, instead, it executes program directly.
 
 ## What is Brainfuck?
 
-**Brainfuck** is an [esoteric programming language](https://en.wikipedia.org/wiki/Esoteric_programming_language) created by [Urban Müller](https://en.wikipedia.org/wiki/Brainfuck#History). It is not intended for practical use, but to challenge programmers. Despite its extreme minimalism, it is [Turing complete](https://en.wikipedia.org/wiki/Turing_completeness), meaning that **it can solve any computation problem** with enough memory and time.
+**Brainfuck** is an [esoteric programming language](https://en.wikipedia.org/wiki/Esoteric_programming_language) created by [Urban Müller](https://en.wikipedia.org/wiki/Brainfuck#History). It is not intended for practical use, but to challenge programmers. Despite its extreme minimalism, it is [Turing complete](https://en.wikipedia.org/wiki/Turing_completeness), so **it can solve any computation problem** with enough memory and time.
 
-Brainfuck operates on an array of memory cells, where each cell is initially set to zero. There is a pointer, initially set to the first memory cell. Brainfuck has _**eight**_ commands (all other characters are ignored, so they can be used as comments):
+Brainfuck operates on an array of memory cells, where each cell is initially set to zero. Also there's a pointer, initially set to the first memory cell. Brainfuck has _**eight**_ commands (all other characters are ignored, so they can be used as comments):
 
 | Command         | C equivalent                                                           | Description                                                   |
 | --------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------- |
@@ -40,9 +40,9 @@ _For more information, check out [Wikipedia](https://en.wikipedia.org/wiki/Brain
 
 This project should:
 
-1.  contain code that is easy to read for beginners (who already know [the concepts of Rust](https://doc.rust-lang.org/book/second-edition/index.html))
+1.  have code that is easy to read for beginners (who already know [the concepts of Rust](https://doc.rust-lang.org/book/second-edition/index.html))
 2.  not sacrifice readability for performance (thanks to the _magic_ of the Rust compiler)
-3.  show that Rust is a really fast language
+3.  show that (safe) Rust is a really fast language
 4.  be at least comparable to optimizing brainfuck interpreters written in C (e.g. [bff4](http://mazonka.com/brainf/)), but being faster than them would be nice too!
 
 ## Installation
