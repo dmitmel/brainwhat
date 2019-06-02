@@ -72,12 +72,10 @@ http://www.hevanet.com/cristofd/brainfuck/]
       .collect::<Vec<char>>();
 
     fn program_to_chars(program: &[Instruction]) -> Vec<char> {
-      program
-        .iter()
-        .fold(Vec::new(), |mut result, instruction| {
-          result.extend(instruction.to_string().chars());
-          result
-        })
+      program.iter().fold(Vec::new(), |mut result, instruction| {
+        result.extend(instruction.to_string().chars());
+        result
+      })
     }
 
     let parsed_program = parse(&source_code_chars).unwrap();
