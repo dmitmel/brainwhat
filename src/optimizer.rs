@@ -48,6 +48,16 @@ pub fn optimize(program: &[Instruction]) -> Result<Vec<Instruction>> {
         Move(total)
       }
 
+    JumpIfZero(_) => {
+        match program[index + 1 .. program.len()] {
+            [Add(-1), JumpIfNonZero(_)] => {
+                skip_chars += 2;
+                Clear
+            },
+            _ => instruction,
+        }
+    },
+
       _ => instruction,
     });
   }
@@ -128,6 +138,17 @@ mod tests {
       Move(-1),
     ],
     [Add(-1), Move(1)]
+  );
+
+  test!(
+      test_clear_pattern,
+      [
+      Add(1),
+      JumpIfZero(0),
+      Add(-1),
+      JumpIfNonZero(0),
+      ],
+      [Add(1), Clear]
   );
 
   test!(

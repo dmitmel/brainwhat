@@ -59,15 +59,17 @@ impl Interpreter {
           });
         }
 
-        Print => self.print_char(output)?,
-        Read => self.read_char(input)?,
-
         JumpIfZero(address) => if self.read_memory() == 0 {
           char_index = address;
         },
         JumpIfNonZero(address) => if self.read_memory() != 0 {
           char_index = address;
         },
+
+        Print => self.print_char(output)?,
+        Read => self.read_char(input)?,
+
+        Clear => self.store_memory(0),
       }
 
       char_index += 1;

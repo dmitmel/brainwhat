@@ -4,10 +4,11 @@ use std::fmt;
 pub enum Instruction {
   Move(isize),
   Add(isize),
-  Print,
-  Read,
   JumpIfZero(usize),
   JumpIfNonZero(usize),
+  Print,
+  Read,
+  Clear,
 }
 
 impl fmt::Display for Instruction {
@@ -24,11 +25,13 @@ impl fmt::Display for Instruction {
         Add(n) if *n > 0 => "+".repeat(*n as usize),
         Add(n) if *n < 0 => "-".repeat(n.abs() as usize),
 
+        JumpIfZero(_) => "[".to_owned(),
+        JumpIfNonZero(_) => "]".to_owned(),
+
         Print => ".".to_owned(),
         Read => ",".to_owned(),
 
-        JumpIfZero(_) => "[".to_owned(),
-        JumpIfNonZero(_) => "]".to_owned(),
+        Clear => "[-]".to_owned(),
 
         _ => String::default(),
       }
@@ -70,7 +73,7 @@ http://www.hevanet.com/cristofd/brainfuck/]
 
     fn program_to_chars(program: &[Instruction]) -> Vec<char> {
       program
-        .into_iter()
+        .iter()
         .fold(Vec::new(), |mut result, instruction| {
           result.extend(instruction.to_string().chars());
           result
