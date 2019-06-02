@@ -48,12 +48,14 @@ pub fn optimize(program: &[Instruction]) -> Result<Vec<Instruction>> {
         Move(total)
       }
 
-    JumpIfZero(_) => {
-        match &program[index + 1 ..] {
+    JumpIfZero(loop_end) => {
+        match &program[index + 1 ..= loop_end] {
+            // Optimizes clear loops into Clear instruction
             [Add(-1), JumpIfNonZero(_)] => {
                 skip_chars += 2;
                 Clear
             },
+
             _ => instruction,
         }
     },
