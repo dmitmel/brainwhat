@@ -49,7 +49,7 @@ pub fn optimize(program: &[Instruction]) -> Result<Vec<Instruction>> {
       }
 
     JumpIfZero(_) => {
-        match program[index + 1 .. program.len()] {
+        match &program[index + 1 ..] {
             [Add(-1), JumpIfNonZero(_)] => {
                 skip_chars += 2;
                 Clear
