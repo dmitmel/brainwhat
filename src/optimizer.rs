@@ -51,7 +51,7 @@ pub fn optimize(program: &[Instruction]) -> Result<Vec<Instruction>> {
       JumpIfZero(loop_end) => {
         match program.get(index + 1..=loop_end) {
           // Optimizes clear loops into Clear instruction
-          Some([Add(-1), JumpIfNonZero(_)]) => {
+          Some([Add(_), JumpIfNonZero(_)]) => {
             skip_chars += 2;
             Clear
           }
