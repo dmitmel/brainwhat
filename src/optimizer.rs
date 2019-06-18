@@ -48,6 +48,18 @@ pub fn optimize(program: &[Instruction]) -> Result<Vec<Instruction>> {
         Move(total)
       }
 
+      JumpIfZero(loop_end) => {
+        match program.get(index + 1..=loop_end) {
+          // Optimizes clear loops into Clear instruction
+          Some([Add(_), JumpIfNonZero(_)]) => {
+            skip_chars += 2;
+            Clear
+          }
+
+          _ => instruction,
+        }
+      }
+
       _ => instruction,
     });
   }
@@ -128,6 +140,12 @@ mod tests {
       Move(-1),
     ],
     [Add(-1), Move(1)]
+  );
+
+  test!(
+    test_clear_pattern,
+    [Add(5), JumpIfZero(3), Add(-1), JumpIfNonZero(1), Print],
+    [Add(5), Clear, Print]
   );
 
   test!(

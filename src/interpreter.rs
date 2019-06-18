@@ -32,21 +32,23 @@ impl Interpreter {
 
     while char_index < program.len() {
       match program[char_index] {
-        Move(n) => if n > 0 {
-          let n = n as usize;
-          if n <= self.memory.len() && self.pointer < self.memory.len() - n {
-            self.pointer += n;
-          } else {
-            return Err(Error::PointerOverflow);
+        Move(n) => {
+          if n > 0 {
+            let n = n as usize;
+            if n <= self.memory.len() && self.pointer < self.memory.len() - n {
+              self.pointer += n;
+            } else {
+              return Err(Error::PointerOverflow);
+            }
+          } else if n < 0 {
+            let n = n.abs() as usize;
+            if self.pointer >= n {
+              self.pointer -= n;
+            } else {
+              return Err(Error::PointerUnderflow);
+            }
           }
-        } else if n < 0 {
-          let n = n.abs() as usize;
-          if self.pointer >= n {
-            self.pointer -= n;
-          } else {
-            return Err(Error::PointerUnderflow);
-          }
-        },
+        }
 
         Add(n) => {
           let value = self.read_memory();
@@ -59,15 +61,21 @@ impl Interpreter {
           });
         }
 
+        JumpIfZero(address) => {
+          if self.read_memory() == 0 {
+            char_index = address;
+          }
+        }
+        JumpIfNonZero(address) => {
+          if self.read_memory() != 0 {
+            char_index = address;
+          }
+        }
+
         Print => self.print_char(output)?,
         Read => self.read_char(input)?,
 
-        JumpIfZero(address) => if self.read_memory() == 0 {
-          char_index = address;
-        },
-        JumpIfNonZero(address) => if self.read_memory() != 0 {
-          char_index = address;
-        },
+        Clear => self.store_memory(0),
       }
 
       char_index += 1;
