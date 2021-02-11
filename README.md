@@ -1,7 +1,6 @@
 # brainwhat
 
-[![Travis (.com)](https://img.shields.io/travis/com/dmitmel/brainwhat.svg?style=flat-square)](https://travis-ci.com/dmitmel/brainwhat)
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+[![CI Status](https://github.com/dmitmel/brainwhat/workflows/CI/badge.svg)](https://github.com/dmitmel/brainwhat/actions?query=workflow:CI)
 
 > A fast optimizing Brainfuck interpreter written in pure Rust
 
