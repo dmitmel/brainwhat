@@ -1,0 +1,4 @@
+http://esoteric.sange.fi/brainfuck/bf-source/prog/
+http://www.hevanet.com/cristofd/brainfuck/
+http://web.archive.org/web/20170913173425/http://brain------------------------------------------------------fuck.com/
+https://github.com/AsuMagic/AshBF/blob/master/OPTIMIZATIONS.md
